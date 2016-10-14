@@ -316,7 +316,9 @@
 		</plugins>
 	</build>
 	<modules>
-		<!-- <module>../zplatform-member-individual-api</module> <module>../zplatform-member-individual-provider</module> 
-			<module>../zplatform-member-individual-service</module> -->
+		<module>../zplatform-payment-api</module> 
+		<module>../zplatform-payment-commons</module> 
+		<module>../zplatform-payment-provider</module> 
+		<module>../zplatform-payment-service</module> 
 	</modules>
 </project>
