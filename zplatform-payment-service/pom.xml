@@ -28,6 +28,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+		
 	</dependencies>
 	<build>
 		<finalName>zplatform-payment-service</finalName>
