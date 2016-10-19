@@ -15,9 +15,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.client.producer.SendResult;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
+import com.zlebank.zplatform.cmbc.producer.WithholdingProducer;
+import com.zlebank.zplatform.cmbc.producer.enums.WithholdingTagsEnum;
+import com.zlebank.zplatform.cmbc.producer.interfaces.Producer;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
+import com.zlebank.zplatform.payment.commons.bean.TradeBean;
 import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
 import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
+import com.zlebank.zplatform.payment.commons.enums.ChannelEnmu;
 import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
 import com.zlebank.zplatform.payment.commons.utils.DateUtil;
 import com.zlebank.zplatform.payment.commons.utils.ValidateLocator;
@@ -56,6 +66,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 	 */
 	@Override
 	public ResultBean pay(PayBean payBean) throws PaymentQuickPayException,PaymentRouterException {
+		ResultBean resultBean = null;
 		/** 支付流程
 		 * 0.校验银行卡信息，是否符合卡bin要求，银行卡类型是否正确
 		 * 1.订单校验：校验订单是否存在,交易状态是否为待支付，支付中，过期
@@ -66,37 +77,70 @@ public class QuickPayServiceImpl implements QuickPayService{
 		 * 6.渠道生产者实例化，发送交易数据，查询交易结果
 		 */
 		checkPayment(payBean);
-		
-		
 		PojoTxnsOrderinfo orderinfo = txnsOrderinfoDAO.getOrderinfoByTN(payBean.getTn());
 		if(orderinfo==null){//订单不存在
 			throw new PaymentQuickPayException();
 		}
 		if("02".equals(orderinfo.getStatus())){//订单支付中
-			throw new PaymentQuickPayException();
+			//throw new PaymentQuickPayException();
 		}
 		if("04".equals(orderinfo.getStatus())){//订单过期
+			//throw new PaymentQuickPayException();
+		}
+		if(!payBean.getTxnAmt().equals(orderinfo.getOrderamt().toString())){
 			throw new PaymentQuickPayException();
 		}
 		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getRelatetradetxn());
 		if(txnsLog==null){
 			throw new PaymentQuickPayException();
 		}
-		
-		
 		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getOrderamt().toString(), orderinfo.getMemberid(), txnsLog.getBusicode(), payBean.getCardNo(), txnsLog.getRoutver());
-		
-		
 		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",payBean.getCardType(),payBean.getCardNo());
-		
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		txnsLogDAO.updateBankCardInfo(txnsLog.getTxnseqno(), payBean);
 		txnsOrderinfoDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
 		
+		TradeBean tradeBean = new TradeBean();
+		tradeBean.setCardType(payBean.getCardType());
+		tradeBean.setCardNo(payBean.getCardNo());
+		tradeBean.setAcctName(payBean.getCardKeeper());
+		tradeBean.setCertId(payBean.getCertNo());
+		tradeBean.setMobile(payBean.getPhone());
+		tradeBean.setTxnseqno(txnsLog.getTxnseqno());
+		tradeBean.setBankCode(payBean.getBankCode());
+		tradeBean.setAmount(txnsLog.getAmount().toString());
+		ChannelEnmu channelEnmu = ChannelEnmu.fromValue(channelCode);
+		try {
+			if(channelEnmu==ChannelEnmu.CMBCWITHHOLDING){//民生跨行代扣
+				com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC = sendTradeMsgToCMBC(tradeBean);
+				resultBean = BeanCopyUtil.copyBean(ResultBean.class, sendTradeMsgToCMBC);
+			}
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemotingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MQBrokerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
-		return null;
+		return resultBean;
 	}
+	
+	private com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC(TradeBean tradeBean) throws MQClientException, RemotingException, InterruptedException, MQBrokerException{
+		Producer producer = new WithholdingProducer("192.168.101.104:9876", WithholdingTagsEnum.WITHHOLDING);
+		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
+		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
+		System.out.println(JSON.toJSONString(queryReturnResult));
+		return queryReturnResult;
+	}
+	
 	
 	private void checkPayment(PayBean payBean) throws PaymentQuickPayException{
 		PayCheckBean copyBean = BeanCopyUtil.copyBean(PayCheckBean.class, payBean);
@@ -108,7 +152,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 		if(cardInfo==null){//银行卡信息错误
 			throw new PaymentQuickPayException();
 		}
-		if(!cardInfo.get("TYPE").equals(payBean.getCardType())){//银行卡类型错误
+		if(!cardInfo.get("TYPE").toString().equals(payBean.getCardType())){//银行卡类型错误
 			throw new PaymentQuickPayException();
 		}
 		payBean.setBankCode(cardInfo.get("BANKCODE").toString());

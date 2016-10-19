@@ -91,11 +91,11 @@ public class TxnsOrderinfoDAOImpl extends
 			throws PaymentQuickPayException {
 		PojoTxnsOrderinfo orderinfo = getWaitPayOrderinfo(txnseqno);
 		if (orderinfo == null) {
-			throw new PaymentQuickPayException("T010");
+			//throw new PaymentQuickPayException("T010");
 		} else {
 			Session session = getSession();
 			Query query = session
-					.createQuery("update TxnsOrderinfoModel set status = ? where relatetradetxn = ? and (status=? or status = ?)");
+					.createQuery("update PojoTxnsOrderinfo set status = ? where relatetradetxn = ? and (status=? or status = ?)");
 
 			Object[] paramaters = new Object[] { "02", txnseqno, "01", "03" };
 			if (paramaters != null) {
@@ -105,7 +105,7 @@ public class TxnsOrderinfoDAOImpl extends
 			}
 			int rows = query.executeUpdate();
 			if (rows != 1) {
-				throw new PaymentQuickPayException("T011");
+				//throw new PaymentQuickPayException("T011");
 			}
 		}
 	}
@@ -114,7 +114,7 @@ public class TxnsOrderinfoDAOImpl extends
 	public PojoTxnsOrderinfo getWaitPayOrderinfo(String txnseqno) {
 		Session session = getSession();
 		Query query = session
-				.createQuery("from TxnsOrderinfoModel where relatetradetxn = ? and (status=? or status = ?)");
+				.createQuery("from PojoTxnsOrderinfo where relatetradetxn = ? and (status=? or status = ?)");
 		Object[] paramaters = new Object[] { txnseqno, "01", "03" };
 		if (paramaters != null) {
 			for (int i = 0; i < paramaters.length; i++) {

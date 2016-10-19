@@ -59,6 +59,11 @@ public class PayBean implements Serializable{
 	 * 银联银行机构代码/人行联行号（内部使用，可以不用传值）
 	 */
 	private String bankCode;
+	
+	/**
+	 * 交易金额
+	 */
+	private String txnAmt;
 	/**
 	 * @return the tn
 	 */
@@ -154,6 +159,18 @@ public class PayBean implements Serializable{
 	 */
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
+	}
+	/**
+	 * @return the txnAmt
+	 */
+	public String getTxnAmt() {
+		return txnAmt;
+	}
+	/**
+	 * @param txnAmt the txnAmt to set
+	 */
+	public void setTxnAmt(String txnAmt) {
+		this.txnAmt = txnAmt;
 	}
 	
 	

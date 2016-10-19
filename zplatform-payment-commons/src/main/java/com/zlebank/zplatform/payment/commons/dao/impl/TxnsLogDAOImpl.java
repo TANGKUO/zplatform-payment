@@ -57,6 +57,7 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 	 * @return
 	 */
 	@Override
+	@Transactional(readOnly=true)
 	public PojoTxnsLog getTxnsLogByTxnseqno(String txnseqno) {
 		Criteria criteria = getSession().createCriteria(PojoTxnsLog.class);
 		criteria.add(Restrictions.eq("txnseqno", txnseqno));
@@ -67,6 +68,7 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 	 *
 	 */
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor=Throwable.class)
 	public void riskTradeControl(String txnseqno, String coopInsti,
 			String merchNo, String memberId, String busiCode, String txnAmt,
 			String cardType, String cardNo) throws PaymentRouterException {
@@ -121,8 +123,8 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void initretMsg(String txnseqno) {
-		// TODO Auto-generated method stub
-		String hql = "update PojoTxnsLog set set payretcode = '',payretinfo='',retcode='',retinfo='' where txnseqno = ?  ";
+		// TODO Auto-generated method stub       
+		String hql = "update PojoTxnsLog set payretcode = '',payretinfo='',retcode='',retinfo='' where txnseqno = ?  ";
 		Session session = getSession();
 		Query query = session.createQuery(hql);
 		query.setParameter(0, txnseqno);

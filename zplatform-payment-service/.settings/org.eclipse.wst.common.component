@@ -2,8 +2,8 @@
     <wb-module deploy-name="zplatform-payment-service">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <dependent-module archiveName="zplatform-payment-provider-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-payment-provider/zplatform-payment-provider">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -14,6 +14,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="zplatform-order-producer-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-order-producer/zplatform-order-producer">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="zplatform-cmbc-producer-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-cmbc-producer/zplatform-cmbc-producer">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="zplatform-payment-service"/>
