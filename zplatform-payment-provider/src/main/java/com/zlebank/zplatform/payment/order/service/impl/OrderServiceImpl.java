@@ -19,11 +19,13 @@ import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
+import com.zlebank.zplatform.order.producer.InsteadPayOrderProducer;
 import com.zlebank.zplatform.order.producer.SimpleOrderProducer;
 import com.zlebank.zplatform.order.producer.bean.ResultBean;
 import com.zlebank.zplatform.order.producer.enums.OrderTagsEnum;
 import com.zlebank.zplatform.order.producer.interfaces.Producer;
 import com.zlebank.zplatform.payment.exception.PaymentOrderException;
+import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
 import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
 import com.zlebank.zplatform.payment.order.service.OrderService;
 
@@ -79,6 +81,48 @@ public class OrderServiceImpl implements OrderService{
 			throw new PaymentOrderException();
 		}
 		
+	}
+
+
+
+	/**
+	 *
+	 * @param orderBean
+	 * @return
+	 * @throws PaymentOrderException 
+	 */
+	@Override
+	public String createInsteadPayOrder(InsteadPayOrderBean orderBean) throws PaymentOrderException {
+		try {
+			Producer producer = new  InsteadPayOrderProducer("192.168.101.104:9876");
+			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.INSTEADPAY_REALTIME);
+			ResultBean resultBean = producer.queryReturnResult(sendResult);
+			if(resultBean.isResultBool()){
+				return resultBean.getResultObj().toString();
+			}else{
+				throw new PaymentOrderException();
+			}
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getErrorMessage());
+			throw new PaymentOrderException();
+		} catch (RemotingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException();
+		} catch (MQBrokerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException();
+		}
 	}
 	
 }

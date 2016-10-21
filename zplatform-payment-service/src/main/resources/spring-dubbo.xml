@@ -4,8 +4,8 @@
 	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-	<dubbo:service interface="com.zlebank.zplatform.payment.order.service.OrderService" ref="orderService" retries="1" version="1.0" timeout="60000"/>
-	<dubbo:service interface="com.zlebank.zplatform.payment.quickpay.service.QuickPayService" ref="quickPayService" retries="1" version="1.0" timeout="60000"/>
-	<dubbo:service interface="com.zlebank.zplatform.payment.order.service.QueryService" ref="queryService" retries="1" version="1.0"/>
-	
+	<dubbo:service interface="com.zlebank.zplatform.payment.order.service.OrderService" ref="orderService" retries="0" version="1.0" timeout="60000"/>
+	<dubbo:service interface="com.zlebank.zplatform.payment.quickpay.service.QuickPayService" ref="quickPayService" retries="0" version="1.0" timeout="60000"/>
+	<dubbo:service interface="com.zlebank.zplatform.payment.order.service.QueryService" ref="queryService" retries="0" version="1.0"/>
+	<dubbo:service interface="com.zlebank.zplatform.payment.quickpay.service.RealTimeInsteadPayService" ref="realTimeInsteadPayService" retries="0" version="1.0" timeout="60000"/>
 </beans>

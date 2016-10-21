@@ -49,7 +49,7 @@
 	<!-- hibernate logger -->
 	<logger name="org.hibernate" level="error" />
 	<!-- Spring framework logger -->
-	<logger name="org.springframework" level="error" additivity="false"></logger>
+	<logger name="org.springframework" level="info" additivity="true"></logger>
 
 	<logger name="com.creditease" level="info" additivity="true">
 		<appender-ref ref="appLogAppender" />

@@ -11,6 +11,7 @@
 package com.zlebank.zplatform.payment.order.service;
 
 import com.zlebank.zplatform.payment.exception.PaymentOrderException;
+import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
 import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
 
 /**
@@ -24,9 +25,19 @@ import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
 public interface OrderService {
 
 	/**
-	 * 生成消费订单
+	 *  生成消费订单
 	 * @param orderBean 订单数据bean
 	 * @return 受理订单号TN
+	 * @throws PaymentOrderException
 	 */
+	
 	public String createConsumeOrder(final SimpleOrderBean orderBean) throws PaymentOrderException;
+	
+	/**
+	 * 生成实时代付订单 
+	 * @param orderBean 代付订单数据bean
+	 * @return 受理订单号 tn
+	 * @throws PaymentOrderException
+	 */
+	public String createInsteadPayOrder(final InsteadPayOrderBean orderBean)  throws PaymentOrderException;
 }

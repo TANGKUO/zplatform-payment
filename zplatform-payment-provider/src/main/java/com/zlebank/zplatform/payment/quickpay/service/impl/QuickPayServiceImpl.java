@@ -28,6 +28,7 @@ import com.zlebank.zplatform.payment.commons.bean.TradeBean;
 import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
 import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
 import com.zlebank.zplatform.payment.commons.enums.ChannelEnmu;
+import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
 import com.zlebank.zplatform.payment.commons.utils.DateUtil;
 import com.zlebank.zplatform.payment.commons.utils.ValidateLocator;
@@ -99,7 +100,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		txnsLogDAO.updateBankCardInfo(txnsLog.getTxnseqno(), payBean);
 		txnsOrderinfoDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
-		
+		txnsLogDAO.updateTradeStatFlag(txnsLog.getTxnseqno(), TradeStatFlagEnum.READY);
 		TradeBean tradeBean = new TradeBean();
 		tradeBean.setCardType(payBean.getCardType());
 		tradeBean.setCardNo(payBean.getCardNo());

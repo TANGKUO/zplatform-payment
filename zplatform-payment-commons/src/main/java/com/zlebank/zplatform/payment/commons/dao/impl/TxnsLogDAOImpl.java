@@ -13,6 +13,7 @@ package com.zlebank.zplatform.payment.commons.dao.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
+import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
 import com.zlebank.zplatform.payment.quickpay.bean.PayBean;
@@ -151,5 +153,37 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 		query.setParameter(4, txnseqno);
 		int rows = query.executeUpdate();
 		log.info("updateBankCardInfo() sql :{},effect rows:{}", hql, rows);
+	}
+	
+	public Long getTxnFee(PojoTxnsLog txnsLog){
+        //交易序列号，扣率版本，业务类型，交易金额，会员号，原交易序列号，卡类型 
+		SQLQuery sqlQuery = getSession().createSQLQuery("select FNC_GETFEES(?,?,?,?,?,?,?) as fee from dual");
+		Object[] paramates = new Object[]{txnsLog.getTxnseqno(),txnsLog.getFeever(),txnsLog.getBusicode(),txnsLog.getAmount(),txnsLog.getAccsecmerno(),txnsLog.getTxnseqnoOg(),txnsLog.getCardtype()};
+		for(int i=0;i<paramates.length;i++){
+			sqlQuery.setParameter(i, paramates[i]);
+		}
+		List<Map<String, Object>> feeList = sqlQuery.list();
+        
+        if(feeList.size()>0){
+            if(StringUtils.isNotEmpty((String)feeList.get(0).get("FEE"))){
+                return 0L;
+            }else{
+                return Long.valueOf(feeList.get(0).get("FEE")+"");
+            }
+            
+        }
+        return 0L;
+    }
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void updateTradeStatFlag(String txnseqno,
+			TradeStatFlagEnum tradeStatFlagEnum) {
+		String hql = "update PojoTxnsLog set tradestatflag = ? where txnseqno = ?";
+		Query query = getSession().createQuery(hql);
+		query.setParameter(0, tradeStatFlagEnum.getStatus());
+		query.setParameter(1, txnseqno);
+		int rows = query.executeUpdate();
+		log.info("updateTradeStatFlag() effect rows:" + rows);
 	}
 }
