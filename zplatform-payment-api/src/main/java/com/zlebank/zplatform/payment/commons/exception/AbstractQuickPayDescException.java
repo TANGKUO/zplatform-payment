@@ -8,7 +8,7 @@ public abstract class AbstractQuickPayDescException extends AbstractDescribeExce
 	 * 
 	 */
 	private static final long serialVersionUID = 8484664176033605192L;
-	private static final  ResourceBundle RESOURCE = ResourceBundle.getBundle("order_exception_des");
+	private static final  ResourceBundle RESOURCE = ResourceBundle.getBundle("payment_exception");
 	@Override
 	public ResourceBundle getResourceBundle() {
 		return RESOURCE;

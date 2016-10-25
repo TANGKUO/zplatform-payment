@@ -93,4 +93,20 @@ public class InsteadPayRealtimeDAOImpl extends HibernateBaseDAOImpl<PojoInsteadP
 		}
 		return orderinfo;
 	}
+
+	/**
+	 *
+	 * @param merchNo
+	 * @param orderNo
+	 * @return
+	 */
+	@Override
+	@Transactional(readOnly=true)
+	public PojoInsteadPayRealtime getOrderinfoByOrderNoAndMerchNo(
+			String merchNo, String orderNo) {
+		Criteria criteria = getSession().createCriteria(PojoInsteadPayRealtime.class);
+		criteria.add(Restrictions.eq("merId", merchNo));
+		criteria.add(Restrictions.eq("orderno", orderNo));
+		return (PojoInsteadPayRealtime) criteria.uniqueResult();
+	}
 }

@@ -25,4 +25,12 @@ public interface InsteadPayRealtimeDAO extends BaseDAO<PojoInsteadPayRealtime>  
 	 * @param txnseqno
 	 */
 	public void updateOrderToStartPay(String txnseqno);
+	
+	/**
+	 * 
+	 * @param merchNo
+	 * @param orderNo
+	 * @return
+	 */
+	public PojoInsteadPayRealtime getOrderinfoByOrderNoAndMerchNo(String merchNo,String orderNo);
 }

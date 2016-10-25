@@ -13,12 +13,14 @@ package com.zlebank.zplatform.payment.order.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zlebank.zplatform.payment.commons.dao.InsteadPayRealtimeDAO;
 import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
 import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
 import com.zlebank.zplatform.payment.commons.enums.BusiTypeEnum;
 import com.zlebank.zplatform.payment.commons.enums.OrderType;
 import com.zlebank.zplatform.payment.order.bean.OrderResultBean;
 import com.zlebank.zplatform.payment.order.service.QueryService;
+import com.zlebank.zplatform.payment.pojo.PojoInsteadPayRealtime;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsOrderinfo;
 
@@ -37,6 +39,8 @@ public class QueryServiceImpl implements QueryService{
 	private TxnsOrderinfoDAO txnsOrderinfoDAO;
 	@Autowired
 	private TxnsLogDAO txnsLogDAO;
+	@Autowired
+	private InsteadPayRealtimeDAO insteadPayRealtimeDAO;
 	/**
 	 *
 	 * @param merchNo
@@ -71,6 +75,41 @@ public class QueryServiceImpl implements QueryService{
 		}
 		order.setOrderType(code);
 		return order;
+	}
+	/**
+	 *
+	 * @param merchNo
+	 * @param orderId
+	 */
+	@Override
+	public OrderResultBean queryInsteadPayOrder(String merchNo, String orderId) {
+		PojoInsteadPayRealtime orderinfo = insteadPayRealtimeDAO.getOrderinfoByOrderNoAndMerchNo(merchNo, orderId);//getOrderinfoByOrderNoAndMerchNo(orderId, merchNo);
+		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getTxnseqno());
+		OrderResultBean order = new OrderResultBean();
+		order.setMerId(orderinfo.getMerId());
+		order.setMerName(orderinfo.getMerName());
+		order.setMerAbbr(orderinfo.getMerNameAbbr());
+		order.setOrderId(orderinfo.getOrderno());
+		order.setTxnAmt(orderinfo.getTransAmt()+"");
+		order.setTxnTime(orderinfo.getOrderCommiTime());
+		order.setOrderStatus(orderinfo.getStatus());
+		order.setOrderDesc(orderinfo.getNotes());
+		order.setCurrencyCode(orderinfo.getCurrencyCode());
+		order.setTn(orderinfo.getTn());
+		BusiTypeEnum busitype = BusiTypeEnum.fromValue(txnsLog.getBusitype());
+		String code=OrderType.UNKNOW.getCode();
+		if(busitype.equals(BusiTypeEnum.consumption)){
+			code=OrderType.CONSUME.getCode();
+		}else if(busitype.equals(BusiTypeEnum.refund)){
+			code=OrderType.REFUND.getCode();
+		}else if(busitype.equals(BusiTypeEnum.charge)){
+			code=OrderType.RECHARGE.getCode();
+		}else if(busitype.equals(BusiTypeEnum.withdrawal)){
+			code=OrderType.WITHDRAW.getCode();
+		}
+		order.setOrderType(code);
+		return order;
+		
 	}
 
 }

@@ -63,22 +63,22 @@ public class OrderServiceImpl implements OrderService{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getErrorMessage());
-			throw new PaymentOrderException();
+			throw new PaymentOrderException("PC013");
 		} catch (RemotingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			throw new PaymentOrderException();
+			throw new PaymentOrderException("PC013");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			throw new PaymentOrderException();
+			throw new PaymentOrderException("PC013");
 		} catch (MQBrokerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			throw new PaymentOrderException();
+			throw new PaymentOrderException("PC013");
 		}
 		
 	}
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService{
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
-				throw new PaymentOrderException();
+				throw new PaymentOrderException("PC014",resultBean.getErrMsg());
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block

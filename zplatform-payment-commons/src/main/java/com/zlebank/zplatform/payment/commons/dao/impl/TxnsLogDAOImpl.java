@@ -108,17 +108,20 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					throw new PaymentRouterException("T034");
+					throw new PaymentRouterException("PC011");
 				}
 			} else {
 				riskLevelEnum = RiskLevelEnum.fromValue(Integer
 						.valueOf(riskInfo));
 			}
 		} else {
-			throw new PaymentRouterException("T034");
+			throw new PaymentRouterException("PC011");
 		}
 		if (RiskLevelEnum.PASS == riskLevelEnum) {// 交易通过
 			return;
+		}
+		if(RiskLevelEnum.REFUSE == riskLevelEnum){//交易被风控系统拒绝
+			throw new PaymentRouterException("PC012");
 		}
 	}
 

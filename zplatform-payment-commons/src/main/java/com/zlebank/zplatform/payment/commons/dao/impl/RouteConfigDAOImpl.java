@@ -135,10 +135,10 @@ public class RouteConfigDAOImpl extends HibernateBaseDAOImpl<PojoRouteConfig>
 			// TODO: handle exception
 			logger.error(e.getMessage());
 			e.printStackTrace();
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC009");
 		}
 		logger.info("member " + memberId + " no find member rout!!!");
-		throw new PaymentQuickPayException();
+		throw new PaymentQuickPayException("PC010");
 	}
 
 	@Transactional(readOnly = true)

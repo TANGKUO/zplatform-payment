@@ -29,4 +29,7 @@ public interface QueryService {
 	 * @return 订单结果bean
 	 */
 	public OrderResultBean queryOrder(String merchNo,String orderId); 
+	
+	
+	public OrderResultBean queryInsteadPayOrder(String merchNo,String orderId);
 }

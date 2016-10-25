@@ -80,20 +80,20 @@ public class QuickPayServiceImpl implements QuickPayService{
 		checkPayment(payBean);
 		PojoTxnsOrderinfo orderinfo = txnsOrderinfoDAO.getOrderinfoByTN(payBean.getTn());
 		if(orderinfo==null){//订单不存在
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC004");
 		}
 		if("02".equals(orderinfo.getStatus())){//订单支付中
-			//throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC005");
 		}
 		if("04".equals(orderinfo.getStatus())){//订单过期
-			//throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC006");
 		}
 		if(!payBean.getTxnAmt().equals(orderinfo.getOrderamt().toString())){
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC007");
 		}
 		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getRelatetradetxn());
 		if(txnsLog==null){
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC008");
 		}
 		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getOrderamt().toString(), orderinfo.getMemberid(), txnsLog.getBusicode(), payBean.getCardNo(), txnsLog.getRoutver());
 		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",payBean.getCardType(),payBean.getCardNo());
@@ -119,15 +119,22 @@ public class QuickPayServiceImpl implements QuickPayService{
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new PaymentQuickPayException("PC013");
 		} catch (RemotingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new PaymentQuickPayException("PC013");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new PaymentQuickPayException("PC013");
 		} catch (MQBrokerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new PaymentQuickPayException("PC013");
+		} catch (Throwable e) {
+			// TODO: handle exception
+			throw new PaymentQuickPayException("PC013");
 		}
 		
 		
@@ -147,14 +154,14 @@ public class QuickPayServiceImpl implements QuickPayService{
 		PayCheckBean copyBean = BeanCopyUtil.copyBean(PayCheckBean.class, payBean);
 		ResultBean resultBean = ValidateLocator.validateBeans(copyBean);
 		if(!resultBean.isResultBool()){//支付信息非空，长度检查出现异常，非法数据
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC001");
 		}
 		Map<String, Object> cardInfo = routeConfigService.getCardInfo(payBean.getCardNo());
 		if(cardInfo==null){//银行卡信息错误
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC002");
 		}
 		if(!cardInfo.get("TYPE").toString().equals(payBean.getCardType())){//银行卡类型错误
-			throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC003");
 		}
 		payBean.setBankCode(cardInfo.get("BANKCODE").toString());
 	}

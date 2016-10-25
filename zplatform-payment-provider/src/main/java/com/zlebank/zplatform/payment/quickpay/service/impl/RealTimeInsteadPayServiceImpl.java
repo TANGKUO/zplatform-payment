@@ -10,6 +10,8 @@
  */
 package com.zlebank.zplatform.payment.quickpay.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,7 @@ import com.zlebank.zplatform.payment.router.service.RouteConfigService;
 @Service("realTimeInsteadPayService")
 public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService {
 
+	private static final Logger logger = LoggerFactory.getLogger(RealTimeInsteadPayServiceImpl.class);
 	@Autowired
 	private OrderService orderService;
 	@Autowired
@@ -79,20 +82,20 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 		String tn = orderService.createInsteadPayOrder(insteadPayOrderBean);
 		PojoInsteadPayRealtime orderinfo = insteadPayRealtimeDAO.queryOrderByTN(tn);
 		if(orderinfo==null){//订单不存在
-			throw new PaymentInsteadPayException();
+			throw new PaymentInsteadPayException("PC015");
 		}
 		if("02".equals(orderinfo.getStatus())){//订单支付中
-			//throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC016");
 		}
 		if("04".equals(orderinfo.getStatus())){//订单过期
-			//throw new PaymentQuickPayException();
+			throw new PaymentQuickPayException("PC017");
 		}
 		if(!insteadPayOrderBean.getTxnAmt().equals(orderinfo.getTransAmt().toString())){
-			throw new PaymentInsteadPayException();
+			throw new PaymentInsteadPayException("PC018");
 		}
 		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getTxnseqno());
 		if(txnsLog==null){
-			throw new PaymentInsteadPayException();
+			throw new PaymentInsteadPayException("PC008");
 		}
 		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getTransAmt().toString(), orderinfo.getMerId(), txnsLog.getBusicode(), txnsLog.getPan(), txnsLog.getRoutver());
 		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",txnsLog.getCardtype(),txnsLog.getPan());
@@ -114,15 +117,23 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error(e.getErrorMessage());
+			throw new PaymentOrderException("PC013");
 		} catch (RemotingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
 		} catch (MQBrokerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
 		}
 		return resultBean;
 	}
