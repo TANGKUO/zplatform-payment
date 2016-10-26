@@ -10,6 +10,8 @@
  */
 package com.zlebank.zplatform.payment.quickpay.service.impl;
 
+import java.util.ResourceBundle;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +141,7 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 	}
 
 	private com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC(InsteadPayTradeBean tradeBean) throws MQClientException, RemotingException, InterruptedException, MQBrokerException{
-		Producer producer = new InsteadPayProducer("192.168.101.104:9876", InsteadPayTagsEnum.INSTEADPAY_REALTIME);
+		Producer producer = new InsteadPayProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), InsteadPayTagsEnum.INSTEADPAY_REALTIME);
 		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
 		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
 		System.out.println(JSON.toJSONString(queryReturnResult));

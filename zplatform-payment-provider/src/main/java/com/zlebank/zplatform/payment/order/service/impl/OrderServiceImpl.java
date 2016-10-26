@@ -10,6 +10,8 @@
  */
 package com.zlebank.zplatform.payment.order.service.impl;
 
+import java.util.ResourceBundle;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,7 +53,7 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public String createConsumeOrder(SimpleOrderBean orderBean) throws PaymentOrderException {
 		try {
-			Producer producer = new SimpleOrderProducer("192.168.101.104:9876");
+			Producer producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
 			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
 			ResultBean resultBean = producer.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
@@ -94,7 +96,7 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public String createInsteadPayOrder(InsteadPayOrderBean orderBean) throws PaymentOrderException {
 		try {
-			Producer producer = new  InsteadPayOrderProducer("192.168.101.104:9876");
+			Producer producer = new InsteadPayOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
 			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.INSTEADPAY_REALTIME);
 			ResultBean resultBean = producer.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){

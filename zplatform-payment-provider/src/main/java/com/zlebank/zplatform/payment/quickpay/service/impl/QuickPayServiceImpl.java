@@ -11,6 +11,7 @@
 package com.zlebank.zplatform.payment.quickpay.service.impl;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,7 +143,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 	}
 	
 	private com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC(TradeBean tradeBean) throws MQClientException, RemotingException, InterruptedException, MQBrokerException{
-		Producer producer = new WithholdingProducer("192.168.101.104:9876", WithholdingTagsEnum.WITHHOLDING);
+		Producer producer = new WithholdingProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), WithholdingTagsEnum.WITHHOLDING);
 		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
 		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
 		System.out.println(JSON.toJSONString(queryReturnResult));
