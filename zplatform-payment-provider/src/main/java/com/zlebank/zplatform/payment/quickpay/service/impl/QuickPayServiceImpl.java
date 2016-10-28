@@ -96,7 +96,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 		if(txnsLog==null){
 			throw new PaymentQuickPayException("PC008");
 		}
-		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getOrderamt().toString(), orderinfo.getMemberid(), txnsLog.getBusicode(), payBean.getCardNo(), txnsLog.getRoutver());
+		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getOrderamt().toString(), orderinfo.getSecmemberno(), txnsLog.getBusicode(), payBean.getCardNo(), txnsLog.getRoutver());
 		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",payBean.getCardType(),payBean.getCardNo());
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		txnsLogDAO.updateBankCardInfo(txnsLog.getTxnseqno(), payBean);

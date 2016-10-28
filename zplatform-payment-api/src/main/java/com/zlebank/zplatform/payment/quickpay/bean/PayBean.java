@@ -51,6 +51,14 @@ public class PayBean implements Serializable{
 	 */
 	private String phone;
 	/**
+	 * cvn2
+	 */
+	private String cvn2;
+	/**
+	 * 卡有效期
+	 */
+	private String expired;
+	/**
 	 * 绑卡标示
 	 */
 	private String bindId;
@@ -59,6 +67,9 @@ public class PayBean implements Serializable{
 	 * 银联银行机构代码/人行联行号（内部使用，可以不用传值）
 	 */
 	private String bankCode;
+	
+	
+	
 	
 	/**
 	 * 交易金额
@@ -171,6 +182,30 @@ public class PayBean implements Serializable{
 	 */
 	public void setTxnAmt(String txnAmt) {
 		this.txnAmt = txnAmt;
+	}
+	/**
+	 * @return the cvn2
+	 */
+	public String getCvn2() {
+		return cvn2;
+	}
+	/**
+	 * @param cvn2 the cvn2 to set
+	 */
+	public void setCvn2(String cvn2) {
+		this.cvn2 = cvn2;
+	}
+	/**
+	 * @return the expired
+	 */
+	public String getExpired() {
+		return expired;
+	}
+	/**
+	 * @param expired the expired to set
+	 */
+	public void setExpired(String expired) {
+		this.expired = expired;
 	}
 	
 	

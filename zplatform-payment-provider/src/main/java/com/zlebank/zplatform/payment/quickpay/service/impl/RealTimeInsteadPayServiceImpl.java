@@ -137,6 +137,9 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 			logger.error(e.getMessage());
 			throw new PaymentOrderException("PC013");
 		}
+		if(resultBean.isResultBool()){
+			return new ResultBean(tn);
+		}
 		return resultBean;
 	}
 
