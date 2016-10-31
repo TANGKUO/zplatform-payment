@@ -52,8 +52,9 @@ public class OrderServiceImpl implements OrderService{
 	 */
 	@Override
 	public String createConsumeOrder(SimpleOrderBean orderBean) throws PaymentOrderException {
+		Producer producer = null;
 		try {
-			Producer producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
 			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
 			ResultBean resultBean = producer.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
@@ -81,7 +82,13 @@ public class OrderServiceImpl implements OrderService{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new PaymentOrderException("PC013");
+		}finally{
+			if(producer!=null){
+				producer.closeProducer();
+			}
+			
 		}
+		
 		
 	}
 
@@ -95,8 +102,9 @@ public class OrderServiceImpl implements OrderService{
 	 */
 	@Override
 	public String createInsteadPayOrder(InsteadPayOrderBean orderBean) throws PaymentOrderException {
+		Producer producer = null;
 		try {
-			Producer producer = new InsteadPayOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			producer = new InsteadPayOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
 			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.INSTEADPAY_REALTIME);
 			ResultBean resultBean = producer.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
@@ -124,6 +132,10 @@ public class OrderServiceImpl implements OrderService{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new PaymentOrderException();
+		}finally{
+			if(producer!=null){
+				producer.closeProducer();
+			}
 		}
 	}
 	

@@ -148,6 +148,7 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
 		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
 		System.out.println(JSON.toJSONString(queryReturnResult));
+		producer.closeProducer();
 		return queryReturnResult;
 	}
 }
