@@ -113,6 +113,9 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 			tradeBean.setTxnseqno(txnsLog.getTxnseqno());
 			if(ChannelEnmu.fromValue(channelCode)==ChannelEnmu.CMBCINSTEADPAY_REALTIME){
 				com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC = sendTradeMsgToCMBC(tradeBean);
+				if(sendTradeMsgToCMBC==null){
+					throw new PaymentQuickPayException("PC019");
+				}
 				resultBean = BeanCopyUtil.copyBean(ResultBean.class, sendTradeMsgToCMBC);
 			}
 			

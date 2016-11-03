@@ -10,6 +10,7 @@
  */
 package com.zlebank.zplatform.payment.order.service;
 
+import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.OrderResultBean;
 
 /**
@@ -28,8 +29,14 @@ public interface QueryService {
 	 * @param orderId 订单号
 	 * @return 订单结果bean
 	 */
-	public OrderResultBean queryOrder(String merchNo,String orderId); 
+	public OrderResultBean queryOrder(String merchNo,String orderId) throws PaymentOrderException; 
 	
-	
-	public OrderResultBean queryInsteadPayOrder(String merchNo,String orderId);
+	/**
+	 * 
+	 * @param merchNo
+	 * @param orderId
+	 * @return
+	 * @throws PaymentOrderException
+	 */
+	public OrderResultBean queryInsteadPayOrder(String merchNo,String orderId)  throws PaymentOrderException;
 }

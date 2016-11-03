@@ -115,6 +115,9 @@ public class QuickPayServiceImpl implements QuickPayService{
 		try {
 			if(channelEnmu==ChannelEnmu.CMBCWITHHOLDING){//民生跨行代扣
 				com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC = sendTradeMsgToCMBC(tradeBean);
+				if(sendTradeMsgToCMBC==null){
+					throw new PaymentQuickPayException("PC019");
+				}
 				resultBean = BeanCopyUtil.copyBean(ResultBean.class, sendTradeMsgToCMBC);
 			}
 		} catch (MQClientException e) {

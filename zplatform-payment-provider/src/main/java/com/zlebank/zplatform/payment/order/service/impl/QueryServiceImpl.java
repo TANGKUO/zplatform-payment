@@ -18,6 +18,7 @@ import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
 import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
 import com.zlebank.zplatform.payment.commons.enums.BusiTypeEnum;
 import com.zlebank.zplatform.payment.commons.enums.OrderType;
+import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.OrderResultBean;
 import com.zlebank.zplatform.payment.order.service.QueryService;
 import com.zlebank.zplatform.payment.pojo.PojoInsteadPayRealtime;
@@ -46,10 +47,14 @@ public class QueryServiceImpl implements QueryService{
 	 * @param merchNo
 	 * @param orderId
 	 * @return
+	 * @throws PaymentOrderException 
 	 */
 	@Override
-	public OrderResultBean queryOrder(String merchNo, String orderId) {
+	public OrderResultBean queryOrder(String merchNo, String orderId) throws PaymentOrderException {
 		PojoTxnsOrderinfo orderinfo = txnsOrderinfoDAO.getOrderinfoByOrderNoAndMerchNo(orderId, merchNo);
+		if(orderinfo==null){
+			throw new PaymentOrderException("PC004");
+		}
 		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getRelatetradetxn());
 		OrderResultBean order = new OrderResultBean();
 		order.setMerId(orderinfo.getFirmemberno());
@@ -80,10 +85,14 @@ public class QueryServiceImpl implements QueryService{
 	 *
 	 * @param merchNo
 	 * @param orderId
+	 * @throws PaymentOrderException 
 	 */
 	@Override
-	public OrderResultBean queryInsteadPayOrder(String merchNo, String orderId) {
+	public OrderResultBean queryInsteadPayOrder(String merchNo, String orderId) throws PaymentOrderException {
 		PojoInsteadPayRealtime orderinfo = insteadPayRealtimeDAO.getOrderinfoByOrderNoAndMerchNo(merchNo, orderId);//getOrderinfoByOrderNoAndMerchNo(orderId, merchNo);
+		if(orderinfo==null){
+			throw new PaymentOrderException("PC004");
+		}
 		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getTxnseqno());
 		OrderResultBean order = new OrderResultBean();
 		order.setMerId(orderinfo.getMerId());
