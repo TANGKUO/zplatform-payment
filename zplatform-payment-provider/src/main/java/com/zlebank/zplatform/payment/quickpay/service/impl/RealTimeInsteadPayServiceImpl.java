@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -69,6 +70,9 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 	private TxnsLogDAO txnsLogDAO;
 	@Autowired
 	private RouteConfigService routeConfigService;
+	@Autowired
+	@Qualifier("cmbcInsteadPayProducer")
+	private Producer producer_cmbc_instead_pay;
 	/**
 	 *
 	 * @param insteadPayOrderBean
@@ -147,11 +151,11 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 	}
 
 	private com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC(InsteadPayTradeBean tradeBean) throws MQClientException, RemotingException, InterruptedException, MQBrokerException{
-		Producer producer = new InsteadPayProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), InsteadPayTagsEnum.INSTEADPAY_REALTIME);
-		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
-		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
+		//Producer producer = new InsteadPayProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), InsteadPayTagsEnum.INSTEADPAY_REALTIME);
+		SendResult sendResult = producer_cmbc_instead_pay.sendJsonMessage(JSON.toJSONString(tradeBean),InsteadPayTagsEnum.INSTEADPAY_REALTIME);
+		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer_cmbc_instead_pay.queryReturnResult(sendResult);
 		System.out.println(JSON.toJSONString(queryReturnResult));
-		producer.closeProducer();
+		//producer.closeProducer();
 		return queryReturnResult;
 	}
 }

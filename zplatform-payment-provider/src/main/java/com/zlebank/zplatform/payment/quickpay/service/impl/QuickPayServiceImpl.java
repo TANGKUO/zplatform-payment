@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -59,7 +60,9 @@ public class QuickPayServiceImpl implements QuickPayService{
 	private RouteConfigService routeConfigService;
 	@Autowired
 	private TxnsLogDAO txnsLogDAO;
-	
+	@Autowired
+	@Qualifier("cmbcWithholdingProducer")
+	private Producer producer_cmbc_withhold;
 	
 	/**
 	 * @param payBean
@@ -146,11 +149,10 @@ public class QuickPayServiceImpl implements QuickPayService{
 	}
 	
 	private com.zlebank.zplatform.cmbc.producer.bean.ResultBean sendTradeMsgToCMBC(TradeBean tradeBean) throws MQClientException, RemotingException, InterruptedException, MQBrokerException{
-		Producer producer = new WithholdingProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), WithholdingTagsEnum.WITHHOLDING);
-		SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(tradeBean));
-		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer.queryReturnResult(sendResult);
+		//Producer producer = new WithholdingProducer(ResourceBundle.getBundle("producer_cmbc").getString("single.namesrv.addr"), WithholdingTagsEnum.WITHHOLDING);
+		SendResult sendResult = producer_cmbc_withhold.sendJsonMessage(JSON.toJSONString(tradeBean),WithholdingTagsEnum.WITHHOLDING);
+		com.zlebank.zplatform.cmbc.producer.bean.ResultBean queryReturnResult = producer_cmbc_withhold.queryReturnResult(sendResult);
 		System.out.println(JSON.toJSONString(queryReturnResult));
-		producer.closeProducer();
 		return queryReturnResult;
 	}
 	

@@ -18,8 +18,8 @@
         <property name="locations">  
            <list>  
               <!-- 推荐使用file的方式引入，这样可以将配置和代码分离   -->
-             <!--  <value>file:D:/cert/*.properties</value> 
-              <value>file:/home/web/trade/config/*.properties</value>  -->
+             <!--  <value>file:D:/cert/*.properties</value>  -->
+              <value>file:/home/web/trade/config/*.properties</value> 
               <value>file:D:/cert/*.properties</value>
               <value>classpath:*.properties</value>  
             </list>  
@@ -36,4 +36,22 @@
 	        <aop:after-throwing method="throwException" pointcut-ref="pointcut" throwing="ex" />
 	    </aop:aspect>
 	</aop:config>
+	
+	<bean id="insteadPayOrderProducer" class="com.zlebank.zplatform.order.producer.spring.InsteadPayOrderSpringProducer"
+            init-method="init"  
+            destroy-method="closeProducer"
+            scope="singleton"/>
+	<bean id="simpleOrderProducer" class="com.zlebank.zplatform.order.producer.spring.SimpleOrderSpringProducer"
+            init-method="init"  
+            destroy-method="closeProducer"
+            scope="singleton"/>
+            
+    <bean id="cmbcWithholdingProducer" class="com.zlebank.zplatform.cmbc.producer.spring.WithholdingSpringProducer"
+            init-method="init"  
+            destroy-method="closeProducer"
+            scope="singleton"/>
+    <bean id="cmbcInsteadPayProducer" class="com.zlebank.zplatform.cmbc.producer.spring.InsteadPaySpringProducer"
+            init-method="init"  
+            destroy-method="closeProducer"
+            scope="singleton"/>
 </beans>

@@ -10,10 +10,10 @@
  */
 package com.zlebank.zplatform.payment.order.service.impl;
 
-import java.util.ResourceBundle;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -21,8 +21,6 @@ import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
-import com.zlebank.zplatform.order.producer.InsteadPayOrderProducer;
-import com.zlebank.zplatform.order.producer.SimpleOrderProducer;
 import com.zlebank.zplatform.order.producer.bean.ResultBean;
 import com.zlebank.zplatform.order.producer.enums.OrderTagsEnum;
 import com.zlebank.zplatform.order.producer.interfaces.Producer;
@@ -43,8 +41,12 @@ import com.zlebank.zplatform.payment.order.service.OrderService;
 public class OrderServiceImpl implements OrderService{
 	private final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
-	
-	
+	@Autowired
+	@Qualifier("simpleOrderProducer")
+	private Producer producer_simple_order;
+	@Autowired
+	@Qualifier("insteadPayOrderProducer")
+	private Producer producer_instead_pay;
 	/**
 	 *
 	 * @param orderBean
@@ -52,11 +54,11 @@ public class OrderServiceImpl implements OrderService{
 	 */
 	@Override
 	public String createConsumeOrder(SimpleOrderBean orderBean) throws PaymentOrderException {
-		Producer producer = null;
+		//Producer producer = null;
 		try {
-			producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
-			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
-			ResultBean resultBean = producer.queryReturnResult(sendResult);
+			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
+			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
@@ -82,11 +84,6 @@ public class OrderServiceImpl implements OrderService{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new PaymentOrderException("PC013");
-		}finally{
-			if(producer!=null){
-				producer.closeProducer();
-			}
-			
 		}
 		
 		
@@ -102,11 +99,11 @@ public class OrderServiceImpl implements OrderService{
 	 */
 	@Override
 	public String createInsteadPayOrder(InsteadPayOrderBean orderBean) throws PaymentOrderException {
-		Producer producer = null;
+		//Producer producer = null;
 		try {
-			producer = new InsteadPayOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
-			SendResult sendResult = producer.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.INSTEADPAY_REALTIME);
-			ResultBean resultBean = producer.queryReturnResult(sendResult);
+			//producer = new InsteadPayOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			SendResult sendResult = producer_instead_pay.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.INSTEADPAY_REALTIME);
+			ResultBean resultBean = producer_instead_pay.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
@@ -132,10 +129,6 @@ public class OrderServiceImpl implements OrderService{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new PaymentOrderException();
-		}finally{
-			if(producer!=null){
-				producer.closeProducer();
-			}
 		}
 	}
 	

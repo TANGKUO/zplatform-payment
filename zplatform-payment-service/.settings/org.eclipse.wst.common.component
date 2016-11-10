@@ -13,6 +13,9 @@
         <dependent-module archiveName="zplatform-payment-api-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-payment-api/zplatform-payment-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="zplatform-order-producer-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-order-producer/zplatform-order-producer">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="zplatform-cmbc-producer-1.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zplatform-cmbc-producer/zplatform-cmbc-producer">
             <dependency-type>uses</dependency-type>
         </dependent-module>
