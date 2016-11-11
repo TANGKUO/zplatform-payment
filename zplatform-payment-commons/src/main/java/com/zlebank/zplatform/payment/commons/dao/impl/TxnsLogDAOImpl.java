@@ -27,8 +27,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
+import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
+import com.zlebank.zplatform.payment.commons.enums.ChannelEnmu;
 import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
+import com.zlebank.zplatform.payment.commons.utils.DateUtil;
 import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
 import com.zlebank.zplatform.payment.quickpay.bean.PayBean;
@@ -188,5 +192,55 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 		query.setParameter(1, txnseqno);
 		int rows = query.executeUpdate();
 		log.info("updateTradeStatFlag() effect rows:" + rows);
+	}
+
+	/**
+	 *
+	 * @param payBean
+	 */
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void updateAccountPay(AccountPayBean payBean) {
+		// TODO Auto-generated method stub
+        String hql = "update PojoTxnsLog set paytype=?,payordno=?,payinst=?,payfirmerno=?,payordcomtime=?,accmemberid=?,accbusicode=?,appordcommitime=? where txnseqno=?";
+        Query query = getSession().createQuery(hql);
+        Object[] paramaters = new Object[]{"03",
+        		System.currentTimeMillis()+"",
+        		ChannelEnmu.ACCOUNTPAY.getChnlcode(),
+        		payBean.getMemberId(),
+        		DateUtil.getCurrentDateTime(),
+        		payBean.getMemberId(),
+        		"10000002",
+        		DateUtil.getCurrentDateTime(),
+        		payBean.getTxnseqno()};
+        for(int i=0;i<paramaters.length;i++){
+        	query.setParameter(i, paramaters[i]);
+		}
+        int rows = query.executeUpdate();
+		log.info("updateAccountPay() effect rows:" + rows);
+	}
+ 
+	/**
+	 *
+	 * @param txnseqno
+	 * @param resultBean
+	 */
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void updateAccountPayResult(String txnseqno, ResultBean resultBean) {
+		// TODO Auto-generated method stub
+		String hql = "update PojoTxnsLog set appinst=?,appordno=?,appordfintime=?,accordfintime=?,tradestatflag=?,payretcode=?,payretinfo=?,retcode=?,retinfo=?,tradetxnflag=?,relate=?,retdatetime=? where txnseqno = ?";
+		Query query = getSession().createQuery(hql);
+		Object[] paramaters = null;
+		if(resultBean.isResultBool()){
+			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),"0000","交易成功","0000","交易成功","10000000","10000000",DateUtil.getCurrentDateTime(),txnseqno};
+		}else{
+			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),resultBean.getErrCode(),resultBean.getErrMsg(),"4099","交易失败","","","",txnseqno};
+		}
+		for(int i=0;i<paramaters.length;i++){
+        	query.setParameter(i, paramaters[i]);
+		}
+        int rows = query.executeUpdate();
+        log.info("updateAccountPayResult() effect rows:" + rows);
 	}
 }

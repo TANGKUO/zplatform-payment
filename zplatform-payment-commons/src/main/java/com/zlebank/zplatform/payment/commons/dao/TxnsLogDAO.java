@@ -10,6 +10,8 @@
  */
 package com.zlebank.zplatform.payment.commons.dao;
 
+import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
+import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
@@ -76,4 +78,17 @@ public interface TxnsLogDAO extends BaseDAO<PojoTxnsLog>{
 	 * @param tradeStatFlagEnum 交易标记状态
 	 */
 	public void updateTradeStatFlag(String txnseqno,TradeStatFlagEnum tradeStatFlagEnum);
+	
+	/**
+	 * 更新账户支付交易数据
+	 * @param payBean
+	 */
+	public void updateAccountPay(AccountPayBean payBean);
+	
+	/**
+	 * 更新账户支付交易结果
+	 * @param txnseqno
+	 * @param resultBean
+	 */
+	public void updateAccountPayResult(String txnseqno,ResultBean resultBean);
 }

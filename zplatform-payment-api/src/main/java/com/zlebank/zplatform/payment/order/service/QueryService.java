@@ -32,6 +32,13 @@ public interface QueryService {
 	public OrderResultBean queryOrder(String merchNo,String orderId) throws PaymentOrderException; 
 	
 	/**
+	 *  交易订单查询方法
+	 * @param tn 受理订单号
+	 * @return
+	 */
+	public OrderResultBean queryOrderByTN(String tn) throws PaymentOrderException ;
+	
+	/**
 	 * 
 	 * @param merchNo
 	 * @param orderId

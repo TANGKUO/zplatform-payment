@@ -120,5 +120,43 @@ public class QueryServiceImpl implements QueryService{
 		return order;
 		
 	}
+	/**
+	 *
+	 * @param tn
+	 * @return
+	 * @throws PaymentOrderException 
+	 */
+	@Override
+	public OrderResultBean queryOrderByTN(String tn) throws PaymentOrderException {
+		PojoTxnsOrderinfo orderinfo = txnsOrderinfoDAO.getOrderinfoByTN(tn);
+		if(orderinfo==null){
+			throw new PaymentOrderException("PC004");
+		}
+		PojoTxnsLog txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getRelatetradetxn());
+		OrderResultBean order = new OrderResultBean();
+		order.setMerId(orderinfo.getFirmemberno());
+		order.setMerName(orderinfo.getFirmembername());
+		order.setMerAbbr(orderinfo.getFirmembershortname());
+		order.setOrderId(orderinfo.getOrderno());
+		order.setTxnAmt(orderinfo.getOrderamt()+"");
+		order.setTxnTime(orderinfo.getOrdercommitime());
+		order.setOrderStatus(orderinfo.getStatus());
+		order.setOrderDesc(orderinfo.getOrderdesc());
+		order.setCurrencyCode(orderinfo.getCurrencycode());
+		order.setTn(orderinfo.getTn());
+		BusiTypeEnum busitype = BusiTypeEnum.fromValue(txnsLog.getBusitype());
+		String code=OrderType.UNKNOW.getCode();
+		if(busitype.equals(BusiTypeEnum.consumption)){
+			code=OrderType.CONSUME.getCode();
+		}else if(busitype.equals(BusiTypeEnum.refund)){
+			code=OrderType.REFUND.getCode();
+		}else if(busitype.equals(BusiTypeEnum.charge)){
+			code=OrderType.RECHARGE.getCode();
+		}else if(busitype.equals(BusiTypeEnum.withdrawal)){
+			code=OrderType.WITHDRAW.getCode();
+		}
+		order.setOrderType(code);
+		return order;
+	}
 
 }
