@@ -8,7 +8,7 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.dao.impl;
+package com.zlebank.zplatform.payment.dao.impl;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -18,7 +18,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
+import com.zlebank.zplatform.payment.commons.dao.impl.HibernateBaseDAOImpl;
+import com.zlebank.zplatform.payment.dao.TxnsOrderinfoDAO;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsOrderinfo;
 

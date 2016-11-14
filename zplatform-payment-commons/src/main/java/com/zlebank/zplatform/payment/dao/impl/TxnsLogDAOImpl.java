@@ -8,10 +8,11 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.dao.impl;
+package com.zlebank.zplatform.payment.dao.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -29,10 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
-import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
-import com.zlebank.zplatform.payment.commons.enums.ChannelEnmu;
-import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
+import com.zlebank.zplatform.payment.commons.dao.impl.HibernateBaseDAOImpl;
 import com.zlebank.zplatform.payment.commons.utils.DateUtil;
+import com.zlebank.zplatform.payment.commons.utils.UUIDUtil;
+import com.zlebank.zplatform.payment.dao.TxnsLogDAO;
+import com.zlebank.zplatform.payment.enums.ChannelEnmu;
+import com.zlebank.zplatform.payment.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
 import com.zlebank.zplatform.payment.quickpay.bean.PayBean;
@@ -229,13 +232,13 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public void updateAccountPayResult(String txnseqno, ResultBean resultBean) {
 		// TODO Auto-generated method stub
-		String hql = "update PojoTxnsLog set appinst=?,appordno=?,appordfintime=?,accordfintime=?,tradestatflag=?,payretcode=?,payretinfo=?,retcode=?,retinfo=?,tradetxnflag=?,relate=?,retdatetime=? where txnseqno = ?";
+		String hql = "update PojoTxnsLog set appinst=?,appordno=?,appordfintime=?,accordfintime=?,tradestatflag=?,payretcode=?,payretinfo=?,retcode=?,retinfo=?,tradetxnflag=?,relate=?,retdatetime=?,payordfintime=?,tradeseltxn=? where txnseqno = ?";
 		Query query = getSession().createQuery(hql);
 		Object[] paramaters = null;
 		if(resultBean.isResultBool()){
-			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),"0000","交易成功","0000","交易成功","10000000","10000000",DateUtil.getCurrentDateTime(),txnseqno};
+			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),"0000","交易成功","0000","交易成功","10000000","10000000",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),UUIDUtil.uuid(),txnseqno};
 		}else{
-			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),resultBean.getErrCode(),resultBean.getErrMsg(),"4099","交易失败","","","",txnseqno};
+			paramaters = new Object[]{"000000000000","",DateUtil.getCurrentDateTime(),DateUtil.getCurrentDateTime(),TradeStatFlagEnum.FINISH_ACCOUNTING.getStatus(),resultBean.getErrCode(),resultBean.getErrMsg(),"4099","交易失败","","","",DateUtil.getCurrentDateTime(),"",txnseqno};
 		}
 		for(int i=0;i<paramaters.length;i++){
         	query.setParameter(i, paramaters[i]);

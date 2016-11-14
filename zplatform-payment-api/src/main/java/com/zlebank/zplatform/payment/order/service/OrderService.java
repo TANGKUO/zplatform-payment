@@ -10,8 +10,10 @@
  */
 package com.zlebank.zplatform.payment.order.service;
 
+import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
+import com.zlebank.zplatform.payment.order.bean.RefundOrderBean;
 import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
 
 /**
@@ -40,4 +42,11 @@ public interface OrderService {
 	 * @throws PaymentOrderException
 	 */
 	public String createInsteadPayOrder(final InsteadPayOrderBean orderBean)  throws PaymentOrderException;
+	
+	/**
+	 * 创建退款申请订单
+	 * @param refundOrderBean 退款订单bean
+	 * @return 受理订单号
+	 */
+	public ResultBean createRefundOrder(final RefundOrderBean refundOrderBean) throws PaymentOrderException;
 }

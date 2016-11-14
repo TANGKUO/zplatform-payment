@@ -17,9 +17,10 @@ import org.springframework.stereotype.Service;
 import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
 import com.zlebank.zplatform.payment.accpay.service.AccountPayService;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
-import com.zlebank.zplatform.payment.commons.dao.TxnsLogDAO;
-import com.zlebank.zplatform.payment.commons.dao.TxnsOrderinfoDAO;
-import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
+import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
+import com.zlebank.zplatform.payment.dao.TxnsLogDAO;
+import com.zlebank.zplatform.payment.dao.TxnsOrderinfoDAO;
+import com.zlebank.zplatform.payment.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentAccountPayException;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
@@ -71,6 +72,7 @@ public class AccountPayServiceImpl implements AccountPayService {
 		}else{
 			orderinfo = orderinfoDAO.getOrderinfoByTN(payBean.getTn());
 			txnsLog = txnsLogDAO.getTxnsLogByTxnseqno(orderinfo.getRelatetradetxn());
+			payBean.setTxnseqno(orderinfo.getRelatetradetxn());
 		}
 		if(txnsLog==null||orderinfo==null){
 			throw new PaymentAccountPayException("PC004");
@@ -91,9 +93,10 @@ public class AccountPayServiceImpl implements AccountPayService {
 		orderinfoDAO.updateOrderToStartPay(payBean.getTxnseqno());
 		txnsLogDAO.updateAccountPay(payBean);
 		txnsLogDAO.updateTradeStatFlag(payBean.getTxnseqno(), TradeStatFlagEnum.PAYING);
-		com.zlebank.zplatform.trade.acc.bean.ResultBean accountingForResultBean = tradeAccountingService.accountingFor(payBean.getTxnseqno());
-		
-		return null;
+		com.zlebank.zplatform.trade.acc.bean.ResultBean accountingForResultBean = tradeAccountingService.accountingForSync(txnsLog.getTxnseqno());
+		ResultBean resultBean = BeanCopyUtil.copyBean(ResultBean.class, accountingForResultBean);
+		txnsLogDAO.updateAccountPayResult(payBean.getTxnseqno(), resultBean);
+		return resultBean;
 	}
 
 }

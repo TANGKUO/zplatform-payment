@@ -1,5 +1,6 @@
-package com.zlebank.zplatform.payment.commons.dao;
+package com.zlebank.zplatform.payment.dao;
 
+import com.zlebank.zplatform.payment.commons.dao.BaseDAO;
 import com.zlebank.zplatform.payment.pojo.PojoInsteadPayRealtime;
 
 /**

@@ -8,7 +8,7 @@
  * Copyright (c) 2015,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.bean;
+package com.zlebank.zplatform.payment.bean;
 
 import java.io.Serializable;
 

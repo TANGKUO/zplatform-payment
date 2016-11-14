@@ -8,7 +8,7 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.enums;
+package com.zlebank.zplatform.payment.enums;
 
 
 /**

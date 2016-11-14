@@ -8,11 +8,12 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.dao;
+package com.zlebank.zplatform.payment.dao;
 
 import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
-import com.zlebank.zplatform.payment.commons.enums.TradeStatFlagEnum;
+import com.zlebank.zplatform.payment.commons.dao.BaseDAO;
+import com.zlebank.zplatform.payment.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
 import com.zlebank.zplatform.payment.quickpay.bean.PayBean;

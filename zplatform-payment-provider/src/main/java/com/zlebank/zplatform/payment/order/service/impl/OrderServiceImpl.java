@@ -24,8 +24,10 @@ import com.alibaba.rocketmq.remoting.exception.RemotingException;
 import com.zlebank.zplatform.order.producer.bean.ResultBean;
 import com.zlebank.zplatform.order.producer.enums.OrderTagsEnum;
 import com.zlebank.zplatform.order.producer.interfaces.Producer;
+import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
 import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
+import com.zlebank.zplatform.payment.order.bean.RefundOrderBean;
 import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
 import com.zlebank.zplatform.payment.order.service.OrderService;
 
@@ -129,6 +131,44 @@ public class OrderServiceImpl implements OrderService{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new PaymentOrderException();
+		}
+	}
+
+
+
+	/**
+	 *
+	 * @param refundOrderBean
+	 * @return
+	 */
+	@Override
+	public com.zlebank.zplatform.payment.commons.bean.ResultBean createRefundOrder (
+			RefundOrderBean refundOrderBean) throws PaymentOrderException {
+		try {
+			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(refundOrderBean), OrderTagsEnum.REFUND_SIMPLIFIED);
+			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
+			return BeanCopyUtil.copyBean(com.zlebank.zplatform.payment.commons.bean.ResultBean.class, resultBean);
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getErrorMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (RemotingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (MQBrokerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
 		}
 	}
 	

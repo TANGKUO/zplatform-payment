@@ -9,4 +9,6 @@
 	<dubbo:service interface="com.zlebank.zplatform.payment.order.service.QueryService" ref="queryService" retries="0" version="1.0"/>
 	<dubbo:service interface="com.zlebank.zplatform.payment.quickpay.service.RealTimeInsteadPayService" ref="realTimeInsteadPayService" retries="0" version="1.0" timeout="60000"/>
 	<dubbo:service interface="com.zlebank.zplatform.payment.realname.service.RealNameCardService" ref="realNameCardService" retries="0" version="1.0" timeout="60000"/>
+	<dubbo:service interface="com.zlebank.zplatform.payment.accpay.service.AccountPayService" ref="accountPayService" retries="0" version="1.0" timeout="60000"/>
+	<dubbo:reference interface="com.zlebank.zplatform.trade.acc.service.TradeAccountingService" id="tradeAccountingService" retries="0" version="1.0" timeout="60000"/>
 </beans>

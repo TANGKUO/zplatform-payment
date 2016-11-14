@@ -8,10 +8,11 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.dao;
+package com.zlebank.zplatform.payment.dao;
 
 import java.util.Map;
 
+import com.zlebank.zplatform.payment.commons.dao.BaseDAO;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
 import com.zlebank.zplatform.payment.pojo.PojoRouteConfig;
 

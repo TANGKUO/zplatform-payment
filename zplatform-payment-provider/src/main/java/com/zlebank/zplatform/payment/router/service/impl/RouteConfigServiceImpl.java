@@ -15,7 +15,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zlebank.zplatform.payment.commons.dao.RouteConfigDAO;
+import com.zlebank.zplatform.payment.dao.RouteConfigDAO;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
 import com.zlebank.zplatform.payment.router.service.RouteConfigService;
 

@@ -1,4 +1,4 @@
-package com.zlebank.zplatform.payment.commons.enums;
+package com.zlebank.zplatform.payment.enums;
 
 public enum ChannelEnmu {
     ZLPAY("98000001"),//证联支付

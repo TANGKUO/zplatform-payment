@@ -8,7 +8,7 @@
  * Copyright (c) 2016,zlebank.All rights reserved.
  * 
  */
-package com.zlebank.zplatform.payment.commons.dao.impl;
+package com.zlebank.zplatform.payment.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.zlebank.zplatform.payment.commons.dao.RouteConfigDAO;
+import com.zlebank.zplatform.payment.commons.dao.impl.HibernateBaseDAOImpl;
+import com.zlebank.zplatform.payment.dao.RouteConfigDAO;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
 import com.zlebank.zplatform.payment.pojo.PojoRouteConfig;
 
