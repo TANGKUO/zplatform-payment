@@ -10,7 +10,7 @@
  */
 package com.zlebank.zplatform.payment.exception;
 
-import com.zlebank.zplatform.payment.commons.exception.AbstractOrderDescException;
+import com.zlebank.zplatform.payment.commons.exception.AbstractRealNameDescException;
 
 /**
  * Class Description
@@ -20,7 +20,7 @@ import com.zlebank.zplatform.payment.commons.exception.AbstractOrderDescExceptio
  * @date 2016年11月10日 上午11:22:25
  * @since 
  */
-public class PaymentRealNameException extends AbstractOrderDescException{
+public class PaymentRealNameException extends AbstractRealNameDescException{
 	/**
 	 * serialVersionUID
 	 */

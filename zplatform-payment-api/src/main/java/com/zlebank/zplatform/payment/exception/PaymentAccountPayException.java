@@ -10,7 +10,7 @@
  */
 package com.zlebank.zplatform.payment.exception;
 
-import com.zlebank.zplatform.payment.commons.exception.AbstractQuickPayDescException;
+import com.zlebank.zplatform.payment.commons.exception.AbstractAccountPayDescException;
 
 /**
  * Class Description
@@ -20,7 +20,7 @@ import com.zlebank.zplatform.payment.commons.exception.AbstractQuickPayDescExcep
  * @date 2016年10月11日 下午5:10:06
  * @since 
  */
-public class PaymentAccountPayException extends AbstractQuickPayDescException{
+public class PaymentAccountPayException extends AbstractAccountPayDescException{
 
 	/**
 	 * serialVersionUID

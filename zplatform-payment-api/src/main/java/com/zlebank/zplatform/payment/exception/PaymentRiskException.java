@@ -10,7 +10,7 @@
  */
 package com.zlebank.zplatform.payment.exception;
 
-import com.zlebank.zplatform.payment.commons.exception.AbstractOrderDescException;
+import com.zlebank.zplatform.payment.commons.exception.AbstractRiskDescException;
 
 /**
  * 统一支付服务订单异常
@@ -20,7 +20,7 @@ import com.zlebank.zplatform.payment.commons.exception.AbstractOrderDescExceptio
  * @date 2016年10月11日 下午4:29:09
  * @since 
  */
-public class PaymentRiskException extends AbstractOrderDescException{
+public class PaymentRiskException extends AbstractRiskDescException{
 
 	/**
 	 * serialVersionUID

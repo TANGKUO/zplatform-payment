@@ -29,6 +29,7 @@ import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
 import com.zlebank.zplatform.payment.order.bean.RefundOrderBean;
 import com.zlebank.zplatform.payment.order.bean.SimpleOrderBean;
+import com.zlebank.zplatform.payment.order.bean.WithdrawOrderBean;
 import com.zlebank.zplatform.payment.order.service.OrderService;
 
 /**
@@ -142,13 +143,102 @@ public class OrderServiceImpl implements OrderService{
 	 * @return
 	 */
 	@Override
-	public com.zlebank.zplatform.payment.commons.bean.ResultBean createRefundOrder (
+	public String createRefundOrder (
 			RefundOrderBean refundOrderBean) throws PaymentOrderException {
 		try {
 			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
 			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(refundOrderBean), OrderTagsEnum.REFUND_SIMPLIFIED);
 			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
-			return BeanCopyUtil.copyBean(com.zlebank.zplatform.payment.commons.bean.ResultBean.class, resultBean);
+			if(resultBean.isResultBool()){
+				return resultBean.getResultObj().toString();
+			}else{
+				throw new PaymentOrderException("PC014",resultBean.getErrMsg());
+			}
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getErrorMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (RemotingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (MQBrokerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		}
+	}
+
+
+
+	/**
+	 *
+	 * @param orderBean
+	 * @return
+	 * @throws PaymentOrderException
+	 */
+	@Override
+	public String createRechargeOrder(SimpleOrderBean orderBean)
+			throws PaymentOrderException {
+		try {
+			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
+			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
+			if(resultBean.isResultBool()){
+				return resultBean.getResultObj().toString();
+			}else{
+				throw new PaymentOrderException();
+			}
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getErrorMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (RemotingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		} catch (MQBrokerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			throw new PaymentOrderException("PC013");
+		}
+	}
+
+
+
+	/**
+	 *
+	 * @param withdrawOrderBean
+	 * @return
+	 * @throws PaymentOrderException 
+	 */
+	@Override
+	public String createWithdrawOrder(WithdrawOrderBean withdrawOrderBean) throws PaymentOrderException {
+		try {
+			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
+			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(withdrawOrderBean), OrderTagsEnum.WITHDRAW_SIMPLIFIED);
+			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
+			if(resultBean.isResultBool()){
+				return resultBean.getResultObj().toString();
+			}else{
+				throw new PaymentOrderException("PC014",resultBean.getErrMsg());
+			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
