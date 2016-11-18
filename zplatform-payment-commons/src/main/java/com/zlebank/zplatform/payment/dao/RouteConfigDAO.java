@@ -13,7 +13,7 @@ package com.zlebank.zplatform.payment.dao;
 import java.util.Map;
 
 import com.zlebank.zplatform.payment.commons.dao.BaseDAO;
-import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
+import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoRouteConfig;
 
 /**
@@ -35,10 +35,10 @@ public interface RouteConfigDAO extends BaseDAO<PojoRouteConfig>{
 	 * @param cardNo 卡号
 	 * @param routeVer 路由版本-商户
 	 * @return
-	 * @throws PaymentQuickPayException
+	 * @throws PaymentRouterException
 	 */
 	public String getTradeRoute(String transTime, String transAmt,String memberId, String busiCode, String cardNo, String routeVer)
-			throws PaymentQuickPayException;
+			throws PaymentRouterException;
 	
 	/**
 	 * 通过银行卡卡号获取银行卡bin信息

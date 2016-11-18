@@ -93,4 +93,11 @@ public interface TxnsLogDAO extends BaseDAO<PojoTxnsLog>{
 	 * @param resultBean
 	 */
 	public void updateAccountPayResult(String txnseqno,ResultBean resultBean);
+	
+	/**
+	 * 更新交易手续费
+	 * @param txnseqno
+	 * @param fee
+	 */
+	public void updateTradeFee(String txnseqno,long fee);
 }

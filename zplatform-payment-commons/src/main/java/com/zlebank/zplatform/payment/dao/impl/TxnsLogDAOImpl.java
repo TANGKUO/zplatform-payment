@@ -246,4 +246,22 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
         int rows = query.executeUpdate();
         log.info("updateAccountPayResult() effect rows:" + rows);
 	}
+
+	/**
+	 *
+	 * @param txnseqno
+	 * @param fee
+	 */
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void updateTradeFee(String txnseqno, long fee) {
+		// TODO Auto-generated method stub
+		String hql = "update PojoTxnsLog set txnfee=? where txnseqno = ?  ";
+		Session session = getSession();
+		Query query = session.createQuery(hql);
+		query.setParameter(0, txnseqno);
+		query.setParameter(1, fee+"");
+		int rows = query.executeUpdate();
+		log.info("updateTradeFee sql :{},effect rows:{}", hql, rows);
+	}
 }

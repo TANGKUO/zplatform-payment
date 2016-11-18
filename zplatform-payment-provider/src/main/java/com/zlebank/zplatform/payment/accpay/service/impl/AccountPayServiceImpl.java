@@ -14,6 +14,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zlebank.zplatform.fee.bean.FeeBean;
+import com.zlebank.zplatform.fee.exception.TradeFeeException;
+import com.zlebank.zplatform.fee.service.TradeFeeService;
 import com.zlebank.zplatform.payment.accpay.bean.AccountPayBean;
 import com.zlebank.zplatform.payment.accpay.service.AccountPayService;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
@@ -42,7 +45,8 @@ public class AccountPayServiceImpl implements AccountPayService {
 	private TxnsLogDAO txnsLogDAO;
 	@Autowired
 	private TxnsOrderinfoDAO orderinfoDAO;
-	
+	@Autowired
+	private TradeFeeService tradeFeeService;
 	@Autowired
 	private TradeAccountingService tradeAccountingService;
 	/**
@@ -93,6 +97,22 @@ public class AccountPayServiceImpl implements AccountPayService {
 		orderinfoDAO.updateOrderToStartPay(payBean.getTxnseqno());
 		txnsLogDAO.updateAccountPay(payBean);
 		txnsLogDAO.updateTradeStatFlag(payBean.getTxnseqno(), TradeStatFlagEnum.PAYING);
+		//计算交易手续费
+		try {
+			FeeBean feeBean = new FeeBean();
+			feeBean.setBusiCode(txnsLog.getBusicode());
+			feeBean.setFeeVer(txnsLog.getFeever());
+			feeBean.setTxnAmt(txnsLog.getAmount()+"");
+			feeBean.setMerchNo(txnsLog.getAccsecmerno());
+			feeBean.setCardType("");
+			feeBean.setTxnseqnoOg("");
+			long fee = tradeFeeService.getCommonFee(feeBean);
+			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
+		} catch (TradeFeeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new PaymentAccountPayException("PC028");
+		}
 		com.zlebank.zplatform.trade.acc.bean.ResultBean accountingForResultBean = tradeAccountingService.accountingForSync(txnsLog.getTxnseqno());
 		ResultBean resultBean = BeanCopyUtil.copyBean(ResultBean.class, accountingForResultBean);
 		txnsLogDAO.updateAccountPayResult(payBean.getTxnseqno(), resultBean);

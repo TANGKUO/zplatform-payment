@@ -23,6 +23,9 @@ import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
 import com.zlebank.zplatform.cmbc.producer.enums.InsteadPayTagsEnum;
 import com.zlebank.zplatform.cmbc.producer.interfaces.Producer;
+import com.zlebank.zplatform.fee.bean.FeeBean;
+import com.zlebank.zplatform.fee.exception.TradeFeeException;
+import com.zlebank.zplatform.fee.service.TradeFeeService;
 import com.zlebank.zplatform.payment.bean.InsteadPayTradeBean;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
@@ -70,6 +73,8 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 	private Producer producer_cmbc_instead_pay;
 	@Autowired
 	private TradeRiskControlService tradeRiskControlService;
+	@Autowired
+	private TradeFeeService tradeFeeService;
 	/**
 	 *
 	 * @param insteadPayOrderBean
@@ -122,6 +127,22 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		insteadPayRealtimeDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
 		txnsLogDAO.updateTradeStatFlag(txnsLog.getTxnseqno(), TradeStatFlagEnum.READY);
+		//计算交易手续费
+		try {
+			FeeBean feeBean = new FeeBean();
+			feeBean.setBusiCode(txnsLog.getBusicode());
+			feeBean.setFeeVer(txnsLog.getFeever());
+			feeBean.setTxnAmt(txnsLog.getAmount()+"");
+			feeBean.setMerchNo(txnsLog.getAccsecmerno());
+			feeBean.setCardType(insteadPayOrderBean.getAccType());
+			feeBean.setTxnseqnoOg("");
+			long fee = tradeFeeService.getCommonFee(feeBean);
+			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
+		} catch (TradeFeeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new PaymentInsteadPayException("PC028");
+		}
 		try {
 			InsteadPayTradeBean tradeBean = new InsteadPayTradeBean();
 			tradeBean.setAcc_no(txnsLog.getPan());

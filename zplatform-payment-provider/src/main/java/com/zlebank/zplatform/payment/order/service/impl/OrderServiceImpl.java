@@ -24,7 +24,6 @@ import com.alibaba.rocketmq.remoting.exception.RemotingException;
 import com.zlebank.zplatform.order.producer.bean.ResultBean;
 import com.zlebank.zplatform.order.producer.enums.OrderTagsEnum;
 import com.zlebank.zplatform.order.producer.interfaces.Producer;
-import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
 import com.zlebank.zplatform.payment.exception.PaymentOrderException;
 import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
 import com.zlebank.zplatform.payment.order.bean.RefundOrderBean;

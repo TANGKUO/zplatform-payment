@@ -12,7 +12,7 @@ package com.zlebank.zplatform.payment.router.service;
 
 import java.util.Map;
 
-import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
+import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 
 /**
  * 数据库路由服务接口
@@ -34,7 +34,7 @@ public interface RouteConfigService {
 	 * @param routeVer 路由版本-商户
 	 * @return 交易渠道代码
 	 */
-	public String getTradeChannel(String transTime,String transAmt,String memberId,String busiCode,String cardNo,String routeVer) throws PaymentQuickPayException;
+	public String getTradeChannel(String transTime,String transAmt,String memberId,String busiCode,String cardNo,String routeVer) throws PaymentRouterException;
 	
 	/**
 	 * 通过银行卡号获取银行卡bin信息

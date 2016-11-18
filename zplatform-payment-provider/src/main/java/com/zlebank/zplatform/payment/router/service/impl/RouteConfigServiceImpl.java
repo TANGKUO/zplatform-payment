@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.zlebank.zplatform.payment.dao.RouteConfigDAO;
 import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
+import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.router.service.RouteConfigService;
 
 /**
@@ -43,7 +44,7 @@ public class RouteConfigServiceImpl implements RouteConfigService{
 	 * @throws PaymentQuickPayException
 	 */
 	@Override
-	public String getTradeChannel(String transTime, String transAmt,String memberId, String busiCode, String cardNo,String routeVer)throws PaymentQuickPayException {
+	public String getTradeChannel(String transTime, String transAmt,String memberId, String busiCode, String cardNo,String routeVer)throws PaymentRouterException {
 		return routeConfigDAO.getTradeRoute(transTime, transAmt, memberId, busiCode, cardNo, routeVer);
 	}
 	/**

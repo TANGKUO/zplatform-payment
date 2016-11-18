@@ -11,8 +11,9 @@
 package com.zlebank.zplatform.payment.quickpay.service.impl;
 
 import java.util.Map;
-import java.util.ResourceBundle;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.zookeeper.server.persistence.TxnLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,13 @@ import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
-import com.zlebank.zplatform.cmbc.producer.WithholdingProducer;
 import com.zlebank.zplatform.cmbc.producer.enums.WithholdingTagsEnum;
 import com.zlebank.zplatform.cmbc.producer.interfaces.Producer;
+import com.zlebank.zplatform.fee.bean.FeeBean;
+import com.zlebank.zplatform.fee.exception.TradeFeeException;
+import com.zlebank.zplatform.fee.service.TradeFeeService;
+import com.zlebank.zplatform.member.individual.bean.QuickpayCustBean;
+import com.zlebank.zplatform.member.individual.service.MemberBankCardService;
 import com.zlebank.zplatform.payment.bean.TradeBean;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
@@ -68,7 +73,10 @@ public class QuickPayServiceImpl implements QuickPayService{
 	private Producer producer_cmbc_withhold;
 	@Autowired
 	private TradeRiskControlService tradeRiskControlService;
-	
+	@Autowired
+	private MemberBankCardService memberBankCardService;
+	@Autowired
+	private TradeFeeService tradeFeeService;
 	/**
 	 * @param payBean
 	 * @return
@@ -128,6 +136,22 @@ public class QuickPayServiceImpl implements QuickPayService{
 		txnsLogDAO.updateBankCardInfo(txnsLog.getTxnseqno(), payBean);
 		txnsOrderinfoDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
 		txnsLogDAO.updateTradeStatFlag(txnsLog.getTxnseqno(), TradeStatFlagEnum.READY);
+		//计算交易手续费
+		try {
+			FeeBean feeBean = new FeeBean();
+			feeBean.setBusiCode(txnsLog.getBusicode());
+			feeBean.setFeeVer(txnsLog.getFeever());
+			feeBean.setTxnAmt(txnsLog.getAmount()+"");
+			feeBean.setMerchNo(txnsLog.getAccsecmerno());
+			feeBean.setCardType(payBean.getCardType());
+			feeBean.setTxnseqnoOg("");
+			long fee = tradeFeeService.getCommonFee(feeBean);
+			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
+		} catch (TradeFeeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new PaymentQuickPayException("PC028");
+		}
 		TradeBean tradeBean = new TradeBean();
 		tradeBean.setCardType(payBean.getCardType());
 		tradeBean.setCardNo(payBean.getCardNo());
@@ -188,14 +212,25 @@ public class QuickPayServiceImpl implements QuickPayService{
 		if(!resultBean.isResultBool()){//支付信息非空，长度检查出现异常，非法数据
 			throw new PaymentQuickPayException("PC001");
 		}
-		Map<String, Object> cardInfo = routeConfigService.getCardInfo(payBean.getCardNo());
-		if(cardInfo==null){//银行卡信息错误
-			throw new PaymentQuickPayException("PC002");
+		if(StringUtils.isNotEmpty(payBean.getBindId())){
+			QuickpayCustBean quickpayCustBean = memberBankCardService.getMemberBankCardById(Long.valueOf(payBean.getBindId()));
+			payBean.setBankCode(quickpayCustBean.getBankcode());
+			payBean.setCardKeeper(quickpayCustBean.getAccname());
+			payBean.setCardNo(quickpayCustBean.getCardno());
+			payBean.setPhone(quickpayCustBean.getPhone());
+			payBean.setCertNo(quickpayCustBean.getIdnum());
+			payBean.setCardType(quickpayCustBean.getCardtype());
+		}else{
+			Map<String, Object> cardInfo = routeConfigService.getCardInfo(payBean.getCardNo());
+			if(cardInfo==null){//银行卡信息错误
+				throw new PaymentQuickPayException("PC002");
+			}
+			if(!cardInfo.get("TYPE").toString().equals(payBean.getCardType())){//银行卡类型错误
+				throw new PaymentQuickPayException("PC003");
+			}
+			payBean.setBankCode(cardInfo.get("BANKCODE").toString());
 		}
-		if(!cardInfo.get("TYPE").toString().equals(payBean.getCardType())){//银行卡类型错误
-			throw new PaymentQuickPayException("PC003");
-		}
-		payBean.setBankCode(cardInfo.get("BANKCODE").toString());
+		
 	}
 	
 	

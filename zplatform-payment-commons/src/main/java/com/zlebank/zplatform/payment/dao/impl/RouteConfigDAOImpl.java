@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.zlebank.zplatform.payment.commons.dao.impl.HibernateBaseDAOImpl;
 import com.zlebank.zplatform.payment.dao.RouteConfigDAO;
-import com.zlebank.zplatform.payment.exception.PaymentQuickPayException;
+import com.zlebank.zplatform.payment.exception.PaymentRouterException;
 import com.zlebank.zplatform.payment.pojo.PojoRouteConfig;
 
 /**
@@ -46,7 +46,7 @@ public class RouteConfigDAOImpl extends HibernateBaseDAOImpl<PojoRouteConfig>
 	@Transactional(readOnly = true)
 	@Override
 	public String getTradeRoute(String transTime, String transAmt,String memberId, String busiCode, String cardNo, String routeVer)
-			throws PaymentQuickPayException {
+			throws PaymentRouterException {
 		try {
 			String bankcode = null;
 			String cardType = null;
@@ -136,10 +136,10 @@ public class RouteConfigDAOImpl extends HibernateBaseDAOImpl<PojoRouteConfig>
 			// TODO: handle exception
 			logger.error(e.getMessage());
 			e.printStackTrace();
-			throw new PaymentQuickPayException("PC009");
+			throw new PaymentRouterException("PC009");
 		}
 		logger.info("member " + memberId + " no find member rout!!!");
-		throw new PaymentQuickPayException("PC010");
+		throw new PaymentRouterException("PC010");
 	}
 
 	@Transactional(readOnly = true)
