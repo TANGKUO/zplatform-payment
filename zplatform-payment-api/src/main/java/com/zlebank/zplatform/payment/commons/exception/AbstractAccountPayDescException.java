@@ -8,7 +8,7 @@ public abstract class AbstractAccountPayDescException extends AbstractDescribeEx
 	 * 
 	 */
 	private static final long serialVersionUID = 8484664176033605192L;
-	private static final  ResourceBundle RESOURCE = ResourceBundle.getBundle("trade_risk_exception");
+	private static final  ResourceBundle RESOURCE = ResourceBundle.getBundle("payment_exception");
 	@Override
 	public ResourceBundle getResourceBundle() {
 		return RESOURCE;
