@@ -87,6 +87,9 @@ public class AccountPayServiceImpl implements AccountPayService {
 		if ("02".equals(orderinfo.getStatus())) {
 			throw new PaymentAccountPayException("PC005");
 		}
+		if ("04".equals(orderinfo.getStatus())) {
+			throw new PaymentAccountPayException("PC006");
+		}
 		if (!orderinfo.getOrderamt().toString().equals(payBean.getTxnAmt())) {
 			throw new PaymentAccountPayException("PC007");
 		}
