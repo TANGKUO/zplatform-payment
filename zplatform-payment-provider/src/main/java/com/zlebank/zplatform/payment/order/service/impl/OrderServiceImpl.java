@@ -65,7 +65,7 @@ public class OrderServiceImpl implements OrderService{
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
-				throw new PaymentOrderException();
+				throw new PaymentOrderException("PC027",resultBean.getErrMsg());
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
@@ -152,7 +152,7 @@ public class OrderServiceImpl implements OrderService{
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
-				throw new PaymentOrderException("PC014",resultBean.getErrMsg());
+				throw new PaymentOrderException("PC025",resultBean.getErrMsg());
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
@@ -195,7 +195,7 @@ public class OrderServiceImpl implements OrderService{
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
-				throw new PaymentOrderException();
+				throw new PaymentOrderException("PC026",resultBean.getErrMsg());
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
@@ -237,7 +237,7 @@ public class OrderServiceImpl implements OrderService{
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();
 			}else{
-				throw new PaymentOrderException("PC014",resultBean.getErrMsg());
+				throw new PaymentOrderException("PC024",resultBean.getErrMsg());
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block

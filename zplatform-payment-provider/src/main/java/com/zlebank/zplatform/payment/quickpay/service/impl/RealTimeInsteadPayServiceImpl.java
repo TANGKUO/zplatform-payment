@@ -10,8 +10,6 @@
  */
 package com.zlebank.zplatform.payment.quickpay.service.impl;
 
-import java.util.ResourceBundle;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +21,14 @@ import com.alibaba.rocketmq.client.exception.MQBrokerException;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
-import com.zlebank.zplatform.cmbc.producer.InsteadPayProducer;
-import com.zlebank.zplatform.cmbc.producer.WithholdingProducer;
 import com.zlebank.zplatform.cmbc.producer.enums.InsteadPayTagsEnum;
-import com.zlebank.zplatform.cmbc.producer.enums.WithholdingTagsEnum;
 import com.zlebank.zplatform.cmbc.producer.interfaces.Producer;
 import com.zlebank.zplatform.payment.bean.InsteadPayTradeBean;
-import com.zlebank.zplatform.payment.bean.TradeBean;
 import com.zlebank.zplatform.payment.commons.bean.ResultBean;
 import com.zlebank.zplatform.payment.commons.utils.BeanCopyUtil;
 import com.zlebank.zplatform.payment.commons.utils.DateUtil;
 import com.zlebank.zplatform.payment.dao.InsteadPayRealtimeDAO;
 import com.zlebank.zplatform.payment.dao.TxnsLogDAO;
-import com.zlebank.zplatform.payment.dao.TxnsOrderinfoDAO;
 import com.zlebank.zplatform.payment.enums.ChannelEnmu;
 import com.zlebank.zplatform.payment.enums.TradeStatFlagEnum;
 import com.zlebank.zplatform.payment.exception.PaymentInsteadPayException;
@@ -46,9 +39,11 @@ import com.zlebank.zplatform.payment.order.bean.InsteadPayOrderBean;
 import com.zlebank.zplatform.payment.order.service.OrderService;
 import com.zlebank.zplatform.payment.pojo.PojoInsteadPayRealtime;
 import com.zlebank.zplatform.payment.pojo.PojoTxnsLog;
-import com.zlebank.zplatform.payment.pojo.PojoTxnsOrderinfo;
 import com.zlebank.zplatform.payment.quickpay.service.RealTimeInsteadPayService;
 import com.zlebank.zplatform.payment.router.service.RouteConfigService;
+import com.zlebank.zplatform.risk.bean.RiskBean;
+import com.zlebank.zplatform.risk.exception.TradeRiskException;
+import com.zlebank.zplatform.risk.service.TradeRiskControlService;
 
 /**
  * Class Description
@@ -73,6 +68,8 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 	@Autowired
 	@Qualifier("cmbcInsteadPayProducer")
 	private Producer producer_cmbc_instead_pay;
+	@Autowired
+	private TradeRiskControlService tradeRiskControlService;
 	/**
 	 *
 	 * @param insteadPayOrderBean
@@ -104,7 +101,24 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 			throw new PaymentInsteadPayException("PC008");
 		}
 		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getTransAmt().toString(), orderinfo.getMerId(), txnsLog.getBusicode(), txnsLog.getPan(), txnsLog.getRoutver());
-		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",txnsLog.getCardtype(),txnsLog.getPan());
+		try {
+			RiskBean riskBean = new RiskBean();
+			riskBean.setBusiCode(txnsLog.getBusicode());
+			riskBean.setCardNo(insteadPayOrderBean.getAccNo());
+			riskBean.setCardType(insteadPayOrderBean.getAccType());
+			riskBean.setCoopInstId(txnsLog.getAccfirmerno());
+			riskBean.setMemberId(txnsLog.getAccmemberid());
+			riskBean.setMerchId(txnsLog.getAccsecmerno());
+			riskBean.setTxnAmt(txnsLog.getAmount()+"");
+			riskBean.setTxnseqno(txnsLog.getTxnseqno());
+			tradeRiskControlService.realTimeTradeRiskControl(riskBean);
+		} catch (TradeRiskException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new PaymentRouterException("PC012");
+			
+		}
+		//txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",txnsLog.getCardtype(),txnsLog.getPan());
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		insteadPayRealtimeDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
 		txnsLogDAO.updateTradeStatFlag(txnsLog.getTxnseqno(), TradeStatFlagEnum.READY);

@@ -52,6 +52,7 @@ public interface TxnsLogDAO extends BaseDAO<PojoTxnsLog>{
 	 * @param cardType 银行卡类型
 	 * @param cardNo 银行卡号
 	 */
+	@Deprecated
 	public void riskTradeControl(String txnseqno,String coopInsti,String merchNo,String memberId,String busiCode,String txnAmt,String cardType,String cardNo) throws PaymentRouterException;
 	
 	/**

@@ -42,6 +42,9 @@ import com.zlebank.zplatform.payment.quickpay.bean.PayBean;
 import com.zlebank.zplatform.payment.quickpay.service.QuickPayService;
 import com.zlebank.zplatform.payment.router.service.RouteConfigService;
 import com.zlebank.zplatform.payment.validate.bean.PayCheckBean;
+import com.zlebank.zplatform.risk.bean.RiskBean;
+import com.zlebank.zplatform.risk.exception.TradeRiskException;
+import com.zlebank.zplatform.risk.service.TradeRiskControlService;
 
 /**
  * Class Description
@@ -63,6 +66,8 @@ public class QuickPayServiceImpl implements QuickPayService{
 	@Autowired
 	@Qualifier("cmbcWithholdingProducer")
 	private Producer producer_cmbc_withhold;
+	@Autowired
+	private TradeRiskControlService tradeRiskControlService;
 	
 	/**
 	 * @param payBean
@@ -100,7 +105,25 @@ public class QuickPayServiceImpl implements QuickPayService{
 			throw new PaymentQuickPayException("PC008");
 		}
 		String channelCode = routeConfigService.getTradeChannel(DateUtil.getCurrentDateTime(), orderinfo.getOrderamt().toString(), orderinfo.getSecmemberno(), txnsLog.getBusicode(), payBean.getCardNo(), txnsLog.getRoutver());
-		txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",payBean.getCardType(),payBean.getCardNo());
+		
+		try {
+			RiskBean riskBean = new RiskBean();
+			riskBean.setBusiCode(txnsLog.getBusicode());
+			riskBean.setCardNo(payBean.getCardNo());
+			riskBean.setCardType(payBean.getCardType());
+			riskBean.setCoopInstId(txnsLog.getAccfirmerno());
+			riskBean.setMemberId(txnsLog.getAccmemberid());
+			riskBean.setMerchId(txnsLog.getAccsecmerno());
+			riskBean.setTxnAmt(txnsLog.getAmount()+"");
+			riskBean.setTxnseqno(txnsLog.getTxnseqno());
+			tradeRiskControlService.realTimeTradeRiskControl(riskBean);
+		} catch (TradeRiskException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new PaymentRouterException("PC012");
+			
+		}
+		//txnsLogDAO.riskTradeControl(txnsLog.getTxnseqno(),txnsLog.getAccfirmerno(),txnsLog.getAccsecmerno(),txnsLog.getAccmemberid(),txnsLog.getBusicode(),txnsLog.getAmount()+"",payBean.getCardType(),payBean.getCardNo());
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		txnsLogDAO.updateBankCardInfo(txnsLog.getTxnseqno(), payBean);
 		txnsOrderinfoDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
@@ -122,6 +145,8 @@ public class QuickPayServiceImpl implements QuickPayService{
 					throw new PaymentQuickPayException("PC019");
 				}
 				resultBean = BeanCopyUtil.copyBean(ResultBean.class, sendTradeMsgToCMBC);
+			}else{
+				throw new PaymentQuickPayException("PC019");
 			}
 		} catch (MQClientException e) {
 			// TODO Auto-generated catch block
@@ -172,5 +197,8 @@ public class QuickPayServiceImpl implements QuickPayService{
 		}
 		payBean.setBankCode(cardInfo.get("BANKCODE").toString());
 	}
+	
+	
+	
 
 }
