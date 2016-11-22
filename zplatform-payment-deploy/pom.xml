@@ -320,5 +320,6 @@
 		<module>../zplatform-payment-commons</module> 
 		<module>../zplatform-payment-provider</module> 
 		<module>../zplatform-payment-service</module> 
+		<module>../zplatform-payment-simple</module>
 	</modules>
 </project>

@@ -189,7 +189,7 @@ public class OrderServiceImpl implements OrderService{
 			throws PaymentOrderException {
 		try {
 			//producer = new SimpleOrderProducer(ResourceBundle.getBundle("producer_order").getString("single.namesrv.addr"));
-			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.COMMONCONSUME_SIMPLIFIED);
+			SendResult sendResult = producer_simple_order.sendJsonMessage(JSON.toJSONString(orderBean), OrderTagsEnum.RECHARGE_SIMPLIFIED);
 			ResultBean resultBean = producer_simple_order.queryReturnResult(sendResult);
 			if(resultBean.isResultBool()){
 				return resultBean.getResultObj().toString();

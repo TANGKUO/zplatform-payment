@@ -259,8 +259,8 @@ public class TxnsLogDAOImpl extends HibernateBaseDAOImpl<PojoTxnsLog> implements
 		String hql = "update PojoTxnsLog set txnfee=? where txnseqno = ?  ";
 		Session session = getSession();
 		Query query = session.createQuery(hql);
-		query.setParameter(0, txnseqno);
-		query.setParameter(1, fee+"");
+		query.setParameter(0, fee);
+		query.setParameter(1, txnseqno);
 		int rows = query.executeUpdate();
 		log.info("updateTradeFee sql :{},effect rows:{}", hql, rows);
 	}

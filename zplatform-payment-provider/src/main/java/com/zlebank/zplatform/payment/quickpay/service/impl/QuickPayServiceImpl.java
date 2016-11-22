@@ -148,6 +148,7 @@ public class QuickPayServiceImpl implements QuickPayService{
 			feeBean.setMerchNo(txnsLog.getAccsecmerno());
 			feeBean.setCardType(payBean.getCardType());
 			feeBean.setTxnseqnoOg("");
+			feeBean.setTxnseqno(txnsLog.getTxnseqno());
 			long fee = tradeFeeService.getCommonFee(feeBean);
 			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
 		} catch (TradeFeeException e1) {

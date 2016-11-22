@@ -127,22 +127,6 @@ public class RealTimeInsteadPayServiceImpl implements RealTimeInsteadPayService 
 		txnsLogDAO.initretMsg(txnsLog.getTxnseqno());
 		insteadPayRealtimeDAO.updateOrderToStartPay(txnsLog.getTxnseqno());
 		txnsLogDAO.updateTradeStatFlag(txnsLog.getTxnseqno(), TradeStatFlagEnum.READY);
-		//计算交易手续费
-		try {
-			FeeBean feeBean = new FeeBean();
-			feeBean.setBusiCode(txnsLog.getBusicode());
-			feeBean.setFeeVer(txnsLog.getFeever());
-			feeBean.setTxnAmt(txnsLog.getAmount()+"");
-			feeBean.setMerchNo(txnsLog.getAccsecmerno());
-			feeBean.setCardType(insteadPayOrderBean.getAccType());
-			feeBean.setTxnseqnoOg("");
-			long fee = tradeFeeService.getCommonFee(feeBean);
-			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
-		} catch (TradeFeeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new PaymentInsteadPayException("PC028");
-		}
 		try {
 			InsteadPayTradeBean tradeBean = new InsteadPayTradeBean();
 			tradeBean.setAcc_no(txnsLog.getPan());

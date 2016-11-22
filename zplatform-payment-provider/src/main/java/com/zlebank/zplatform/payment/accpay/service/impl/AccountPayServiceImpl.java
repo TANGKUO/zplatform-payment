@@ -109,6 +109,7 @@ public class AccountPayServiceImpl implements AccountPayService {
 			feeBean.setMerchNo(txnsLog.getAccsecmerno());
 			feeBean.setCardType("");
 			feeBean.setTxnseqnoOg("");
+			feeBean.setTxnseqno(txnsLog.getTxnseqno());
 			long fee = tradeFeeService.getCommonFee(feeBean);
 			txnsLogDAO.updateTradeFee(txnsLog.getTxnseqno(), fee);
 		} catch (TradeFeeException e1) {
